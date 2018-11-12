@@ -4,8 +4,8 @@
   "description": "Web-based DYMO label printing application",
   "main": "index.html",
   "scripts": {
-    "start": "parcel index.html",
-    "lint": "eslint 'js/**/*.js'",
+    "start": "parcel src/index.html",
+    "lint": "eslint 'src/js/**/*.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

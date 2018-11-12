@@ -62,4 +62,4 @@ const Button = ({ uiState = [], onClick, children, className, ...rest }) => {
 
 Button.propTypes = propTypes;
 
-export default Button;
+export default React.memo(Button);

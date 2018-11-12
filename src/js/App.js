@@ -10,7 +10,6 @@ export default class App extends React.Component {
   timerId = null;
   recognition = null;
   ignoreRecordingEndEvent = false;
-  textareaRef = React.createRef();
 
   state = {
     recording: false,
@@ -24,10 +23,6 @@ export default class App extends React.Component {
   componentDidMount() {
     if ('webkitSpeechRecognition' in window) {
       this.initialiseSpeechRecognition();
-    }
-
-    if (this.textareaRef && this.textareaRef.current) {
-      this.textareaRef.current.focus();
     }
 
     this.timerId = window.setInterval(() => {
@@ -130,12 +125,11 @@ export default class App extends React.Component {
   render = () => (
     <Container>
       <React.Fragment>
-        <Alert message="This is an example warning message" modifier="warning" dismissable />
+        <Alert message="This is an example warning message" theme="warning" />
         <TextBox
           text={this.state.comment}
           onChange={this.handleChange}
           onfocus={this.handleTextAreaFocus}
-          reference={this.textareaRef}
         />
         <ActionPanel
           comment={this.state.comment}

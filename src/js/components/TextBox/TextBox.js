@@ -7,8 +7,7 @@ import { CHAR_LIMIT } from '../../constants';
 const propTypes = {
   onChange: PropTypes.func.isRequired,
   onfocus: PropTypes.func.isRequired,
-  text: PropTypes.string.isRequired,
-  reference: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired
+  text: PropTypes.string.isRequired
 };
 
 const styles = css`
@@ -42,7 +41,7 @@ const styles = css`
   }
 `;
 
-const TextBox = ({ onChange, onfocus, text, reference }) => {
+const TextBox = ({ onChange, onfocus, text }) => {
   const characterCount = CHAR_LIMIT - text.length;
 
   return (
@@ -52,7 +51,6 @@ const TextBox = ({ onChange, onfocus, text, reference }) => {
         <span>{characterCount}</span>
       </label>
       <textarea
-        ref={reference}
         id="comment-box"
         name="comment-box"
         value={text}
