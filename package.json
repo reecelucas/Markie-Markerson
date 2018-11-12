@@ -1,0 +1,42 @@
+{
+  "name": "markie-markerson",
+  "version": "1.0.0",
+  "description": "Web-based DYMO label printing application",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html",
+    "lint": "eslint 'js/**/*.js'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reecelucas/markie-markerson.git"
+  },
+  "author": "Reece Lucas <reecelucas@sky.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/reecelucas/markie-markerson/issues"
+  },
+  "homepage": "https://github.com/reecelucas/markie-markerson#readme",
+  "dependencies": {
+    "emotion": "^9.2.12",
+    "prop-types": "^15.6.2",
+    "react": "^16.6.1",
+    "react-dom": "^16.6.1",
+    "react-emotion": "^9.2.12"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.5",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/preset-env": "^7.1.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.9.0",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-react": "^7.11.1",
+    "parcel-bundler": "^1.10.3",
+    "prettier": "^1.15.2"
+  }
+}
