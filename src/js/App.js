@@ -12,6 +12,7 @@ export default class App extends React.Component {
   ignoreRecordingEndEvent = false;
 
   state = {
+    canRecord: false,
     recording: false,
     printer: false,
     comment: fetchFromLocalStorage(LOCAL_STORAGE_KEY) || ''
@@ -23,15 +24,11 @@ export default class App extends React.Component {
 
   componentDidMount() {
     if ('webkitSpeechRecognition' in window) {
+      this.setState({ canRecord: true });
       this.initialiseSpeechRecognition();
     }
 
-    this.timerId = window.setInterval(() => {
-      saveToLocalStorage({
-        key: LOCAL_STORAGE_KEY,
-        value: this.state.comment
-      });
-    }, AUTO_SAVE_INTERVAL);
+    this.autoSave();
   }
 
   componentWillUnmount() {
@@ -41,6 +38,15 @@ export default class App extends React.Component {
   /****************************************************
    ***** HELPERS **************************************
    ****************************************************/
+
+  autoSave = () => {
+    this.timerId = window.setInterval(() => {
+      saveToLocalStorage({
+        key: LOCAL_STORAGE_KEY,
+        value: this.state.comment
+      });
+    }, AUTO_SAVE_INTERVAL);
+  };
 
   getCharacterCount = () => {
     /**
@@ -139,8 +145,9 @@ export default class App extends React.Component {
   };
 
   render = () => {
-    const allowClear = !this.state.recording && this.state.comment.length;
-    const allowPrint = allowClear && this.getCharacterCount() > 0 && this.state.printer;
+    const canClear = !this.state.recording && this.state.comment.length;
+    const canPrint = canClear && this.getCharacterCount() > 0 && this.state.printer;
+    const canRecord = this.state.canRecord;
 
     return (
       <Container>
@@ -156,12 +163,13 @@ export default class App extends React.Component {
             onFocus={this.handleTextAreaFocus}
           />
           <ActionPanel
+            canClear={canClear}
+            canRecord={canRecord}
+            canPrint={canPrint}
             onClear={this.handleClear}
-            onPrint={this.handlePrint}
             onRecord={this.handleRecord}
+            onPrint={this.handlePrint}
             isRecording={this.state.recording}
-            allowPrint={allowPrint}
-            allowClear={allowClear}
           />
         </React.Fragment>
       </Container>

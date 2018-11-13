@@ -5,11 +5,12 @@ import { css } from 'emotion';
 import { COLOURS, SPACING } from '../../../styles/theme';
 
 const propTypes = {
-  allowPrint: PropTypes.bool.isRequired,
-  allowClear: PropTypes.bool.isRequired,
+  canClear: PropTypes.bool.isRequired,
+  canRecord: PropTypes.bool.isRequired,
+  canPrint: PropTypes.bool.isRequired,
   onClear: PropTypes.func.isRequired,
-  onPrint: PropTypes.func.isRequired,
   onRecord: PropTypes.func.isRequired,
+  onPrint: PropTypes.func.isRequired,
   isRecording: PropTypes.bool.isRequired
 };
 
@@ -43,16 +44,25 @@ const recordStyles = isRecording => css`
   }
 `;
 
-const ActionPanel = ({ allowPrint, allowClear, onClear, onPrint, onRecord, isRecording }) => {
-  const clearBtnState = !allowClear ? ['disabled'] : [];
-  const printBtnState = !allowPrint ? ['disabled'] : [];
+const ActionPanel = ({
+  canPrint,
+  canClear,
+  canRecord,
+  onClear,
+  onPrint,
+  onRecord,
+  isRecording
+}) => {
+  const clearBtnState = !canClear ? ['disabled'] : [];
+  const printBtnState = !canPrint ? ['disabled'] : [];
+  const recordBtnState = !canRecord ? ['disabled'] : [];
 
   return (
     <div className={styles}>
       <Button className={clearStyles} onClick={onClear} uiState={clearBtnState}>
         Clear
       </Button>
-      <Button className={recordStyles(isRecording)} onClick={onRecord}>
+      <Button className={recordStyles(isRecording)} onClick={onRecord} uiState={recordBtnState}>
         {isRecording ? 'Recording' : 'Record'}
       </Button>
       <Button onClick={onPrint} uiState={printBtnState}>
