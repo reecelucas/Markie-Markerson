@@ -221,7 +221,6 @@ export default injectGlobal`
     cursor: help;
   }
 
-  u,
   ins {
     text-decoration: none;
   }

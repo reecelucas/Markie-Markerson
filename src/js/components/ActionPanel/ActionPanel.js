@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import Button from '../Button/Button';
 import { css } from 'emotion';
 import { COLOURS, SPACING } from '../../../styles/theme';
-import { CHAR_LIMIT } from '../../constants';
 
 const propTypes = {
-  comment: PropTypes.string.isRequired,
+  allowPrint: PropTypes.bool.isRequired,
+  allowClear: PropTypes.bool.isRequired,
   onClear: PropTypes.func.isRequired,
   onPrint: PropTypes.func.isRequired,
   onRecord: PropTypes.func.isRequired,
@@ -23,6 +23,12 @@ const styles = css`
   }
 `;
 
+const clearStyles = css`
+  background-color: transparent;
+  color: ${COLOURS.accent};
+  padding: ${SPACING.tiny};
+`;
+
 const recordStyles = isRecording => css`
   background-color: ${COLOURS.accent};
 
@@ -37,16 +43,9 @@ const recordStyles = isRecording => css`
   }
 `;
 
-const clearStyles = css`
-  background-color: transparent;
-  color: ${COLOURS.accent};
-  padding: ${SPACING.tiny};
-`;
-
-const ActionPanel = ({ comment, onClear, onPrint, onRecord, isRecording }) => {
-  const disableInteraction = () => isRecording || !comment.length;
-  const clearBtnState = disableInteraction() ? ['disabled'] : [];
-  const printBtnState = disableInteraction() || CHAR_LIMIT - comment.length < 0 ? ['disabled'] : [];
+const ActionPanel = ({ allowPrint, allowClear, onClear, onPrint, onRecord, isRecording }) => {
+  const clearBtnState = !allowClear ? ['disabled'] : [];
+  const printBtnState = !allowPrint ? ['disabled'] : [];
 
   return (
     <div className={styles}>
@@ -65,4 +64,4 @@ const ActionPanel = ({ comment, onClear, onPrint, onRecord, isRecording }) => {
 
 ActionPanel.propTypes = propTypes;
 
-export default ActionPanel;
+export default React.memo(ActionPanel);

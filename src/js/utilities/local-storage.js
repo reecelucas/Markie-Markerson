@@ -9,10 +9,10 @@ export const saveToLocalStorage = ({ key, value }) => {
 
 export const fetchFromLocalStorage = key => {
   try {
-    const record = JSON.parse(localStorage.getItem(key));
+    const value = JSON.parse(localStorage.getItem(key));
 
-    if (record) {
-      return record;
+    if (value) {
+      return value;
     }
   } catch (e) {
     return false;

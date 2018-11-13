@@ -4,7 +4,7 @@ import TextBox from './components/TextBox/TextBox';
 import ActionPanel from './components/ActionPanel/ActionPanel';
 import Alert from './components/Alert/Alert';
 import { saveToLocalStorage, fetchFromLocalStorage } from './utilities/local-storage';
-import { LOCAL_STORAGE_KEY, AUTO_SAVE_INTERVAL } from './constants';
+import { LOCAL_STORAGE_KEY, AUTO_SAVE_INTERVAL, CHAR_LIMIT } from './constants';
 
 export default class App extends React.Component {
   timerId = null;
@@ -13,6 +13,7 @@ export default class App extends React.Component {
 
   state = {
     recording: false,
+    printer: false,
     comment: fetchFromLocalStorage(LOCAL_STORAGE_KEY) || ''
   };
 
@@ -36,6 +37,21 @@ export default class App extends React.Component {
   componentWillUnmount() {
     window.clearInterval(this.timerId);
   }
+
+  /****************************************************
+   ***** HELPERS **************************************
+   ****************************************************/
+
+  getCharacterCount = () => {
+    /**
+     * Remove HTML tags from the comment string, since we don't
+     * want these included in the character count. We could use
+     * the DOM here (https://tinyurl.com/ydy6s7r9), but we'd need to
+     * sanitize the imput, and the DOM is pretty slow for this use case.
+     */
+    const cleanComment = this.state.comment.replace(/(<([^>]+)>)/gi, '');
+    return CHAR_LIMIT - cleanComment.length;
+  };
 
   /****************************************************
    ***** SPEECH RECOGNITION API ***********************
@@ -92,8 +108,8 @@ export default class App extends React.Component {
    ***** EVENT HANDLERS *******************************
    ****************************************************/
 
-  handleChange = event => {
-    this.setState({ comment: event.target.value });
+  handleChange = html => {
+    this.setState({ comment: html });
   };
 
   handleClear = () => {
@@ -122,23 +138,33 @@ export default class App extends React.Component {
     }
   };
 
-  render = () => (
-    <Container>
-      <React.Fragment>
-        <Alert message="This is an example warning message" theme="warning" />
-        <TextBox
-          text={this.state.comment}
-          onChange={this.handleChange}
-          onfocus={this.handleTextAreaFocus}
-        />
-        <ActionPanel
-          comment={this.state.comment}
-          onClear={this.handleClear}
-          onPrint={this.handlePrint}
-          onRecord={this.handleRecord}
-          isRecording={this.state.recording}
-        />
-      </React.Fragment>
-    </Container>
-  );
+  render = () => {
+    const allowClear = !this.state.recording && this.state.comment.length;
+    const allowPrint = allowClear && this.getCharacterCount() > 0 && this.state.printer;
+
+    return (
+      <Container>
+        <React.Fragment>
+          {!this.state.printer && (
+            <Alert message="Could not find any connected label makers" theme="warning" />
+          )}
+
+          <TextBox
+            text={this.state.comment}
+            charCount={this.getCharacterCount()}
+            onChange={this.handleChange}
+            onFocus={this.handleTextAreaFocus}
+          />
+          <ActionPanel
+            onClear={this.handleClear}
+            onPrint={this.handlePrint}
+            onRecord={this.handleRecord}
+            isRecording={this.state.recording}
+            allowPrint={allowPrint}
+            allowClear={allowClear}
+          />
+        </React.Fragment>
+      </Container>
+    );
+  };
 }
