@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '../Button/Button';
-import { css } from 'emotion';
+import { css, keyframes } from 'emotion';
 import { COLOURS, SPACING } from '../../../styles/theme';
 
 const propTypes = {
@@ -13,6 +13,16 @@ const propTypes = {
   onPrint: PropTypes.func.isRequired,
   isRecording: PropTypes.bool.isRequired
 };
+
+const blink = keyframes`
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+`;
 
 const styles = css`
   display: flex;
@@ -34,7 +44,8 @@ const recordStyles = isRecording => css`
   background-color: ${COLOURS.accent};
 
   &:before {
-    background-color: ${isRecording ? '#ff003b' : 'currentColor'};
+    animation: ${isRecording ? `${blink} 1.25s ease infinite both` : 'none'};
+    background-color: #ff003b;
     border-radius: 50%;
     content: '';
     display: inline-block;
@@ -52,25 +63,19 @@ const ActionPanel = ({
   onPrint,
   onRecord,
   isRecording
-}) => {
-  const clearBtnState = !canClear ? ['disabled'] : [];
-  const printBtnState = !canPrint ? ['disabled'] : [];
-  const recordBtnState = !canRecord ? ['disabled'] : [];
-
-  return (
-    <div className={styles}>
-      <Button className={clearStyles} onClick={onClear} uiState={clearBtnState}>
-        Clear
-      </Button>
-      <Button className={recordStyles(isRecording)} onClick={onRecord} uiState={recordBtnState}>
-        {isRecording ? 'Recording' : 'Record'}
-      </Button>
-      <Button onClick={onPrint} uiState={printBtnState}>
-        Print Label
-      </Button>
-    </div>
-  );
-};
+}) => (
+  <div className={styles}>
+    <Button className={clearStyles} onClick={onClear} disabled={!canClear}>
+      Clear
+    </Button>
+    <Button className={recordStyles(isRecording)} onClick={onRecord} disabled={!canRecord}>
+      {isRecording ? 'Recording' : 'Record'}
+    </Button>
+    <Button onClick={onPrint} disabled={!canPrint}>
+      Print Label
+    </Button>
+  </div>
+);
 
 ActionPanel.propTypes = propTypes;
 

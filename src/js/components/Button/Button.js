@@ -5,7 +5,7 @@ import { cx, css } from 'emotion';
 import { COLOURS, SPACING } from '../../../styles/theme';
 
 const propTypes = {
-  uiState: PropTypes.arrayOf(PropTypes.string),
+  disabled: PropTypes.bool,
   onClick: PropTypes.func,
   className: PropTypes.string,
   children: PropTypes.any.isRequired
@@ -40,10 +40,10 @@ const styles = {
   `
 };
 
-const Button = ({ uiState = [], onClick, children, className, ...rest }) => {
+const Button = ({ disabled, onClick, children, className, ...rest }) => {
   const attributes = getAttributeProps(rest);
 
-  if (uiState.includes('disabled')) {
+  if (disabled) {
     attributes['aria-disabled'] = true;
     attributes.disabled = true;
   }

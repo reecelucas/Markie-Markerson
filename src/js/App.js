@@ -3,7 +3,7 @@ import Container from './components/Container/Container';
 import TextBox from './components/TextBox/TextBox';
 import ActionPanel from './components/ActionPanel/ActionPanel';
 import Alert from './components/Alert/Alert';
-import { saveToLocalStorage, fetchFromLocalStorage } from './utilities/local-storage';
+import { saveToLocalStorage, fetchFromLocalStorage } from './helpers/local-storage';
 import { LOCAL_STORAGE_KEY, AUTO_SAVE_INTERVAL, CHAR_LIMIT } from './constants';
 
 export default class App extends React.Component {
@@ -53,7 +53,7 @@ export default class App extends React.Component {
      * Remove HTML tags from the comment string, since we don't
      * want these included in the character count. We could use
      * the DOM here (https://tinyurl.com/ydy6s7r9), but we'd need to
-     * sanitize the imput, and the DOM is pretty slow for this use case.
+     * sanitize the input, and the DOM is pretty slow for this use case.
      */
     const cleanComment = this.state.comment.replace(/(<([^>]+)>)/gi, '');
     return CHAR_LIMIT - cleanComment.length;
