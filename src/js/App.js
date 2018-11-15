@@ -4,17 +4,26 @@ import TextBox from './components/TextBox/TextBox';
 import ActionPanel from './components/ActionPanel/ActionPanel';
 import Alert from './components/Alert/Alert';
 import { saveToLocalStorage, fetchFromLocalStorage } from './helpers/local-storage';
-import { LOCAL_STORAGE_KEY, AUTO_SAVE_INTERVAL, CHAR_LIMIT } from './constants';
+import {
+  AUTO_SAVE_INTERVAL,
+  CHAR_LIMIT,
+  LABEL_XML_TEMPLATE,
+  LOCAL_STORAGE_KEY,
+  USER_ACTIONS,
+  VOICE_COMMANDS
+} from './constants';
 
 export default class App extends React.Component {
   timerId = null;
   recognition = null;
   ignoreRecordingEndEvent = false;
+  label = null;
+  printerName = '';
 
   state = {
     canRecord: false,
     recording: false,
-    printer: false,
+    printerFound: false,
     comment: fetchFromLocalStorage(LOCAL_STORAGE_KEY) || ''
   };
 
@@ -28,6 +37,7 @@ export default class App extends React.Component {
       this.initialiseSpeechRecognition();
     }
 
+    this.setupPrinter();
     this.autoSave();
   }
 
@@ -60,6 +70,43 @@ export default class App extends React.Component {
   };
 
   /****************************************************
+   ***** DYMO LABEL PRINTER API ***********************
+   ****************************************************/
+
+  constructLabel = () => {
+    this.label = window.dymo.label.framework.openLabelXml(LABEL_XML_TEMPLATE);
+  };
+
+  getPrinterName = () => {
+    // Get printer. For simplicity just use the first LabelWriter printer
+    const printers = window.dymo.label.framework.getPrinters();
+    const firstPrinter = printers.find(({ printerType }) => printerType === 'LabelWriterPrinter');
+
+    if (firstPrinter && firstPrinter.name) {
+      this.setState({ printerFound: true });
+      this.printerName = firstPrinter.name;
+    }
+  };
+
+  printLabel = () => {
+    if (!this.label) {
+      return;
+    }
+
+    this.label.setObjectText('Comment', this.state.comment);
+    this.label.print(this.printerName);
+  };
+
+  setupPrinter = () => {
+    if (!window.dymo) {
+      return;
+    }
+
+    this.constructLabel();
+    this.getPrinterName();
+  };
+
+  /****************************************************
    ***** SPEECH RECOGNITION API ***********************
    ****************************************************/
 
@@ -71,6 +118,7 @@ export default class App extends React.Component {
      * 1. Recognition will continue while the user is silent.
      * 2. Interim results will not be emitted while recognition occurs.
      */
+    this.recognition.lang = 'en-UK';
     this.recognition.continuous = true; /* [1] */
     this.recognition.interimResults = false; /* [2] */
 
@@ -79,6 +127,17 @@ export default class App extends React.Component {
     this.recognition.onresult = this.onRecordingResult;
     this.recognition.onend = this.onRecordingEnd;
     this.recognition.onerror = this.onRecordingError;
+  };
+
+  commandIssued = word => VOICE_COMMANDS[word];
+
+  handleCommand = word => {
+    // We want to stop recognition for both "stop" and "print" commands
+    this.recognition.stop();
+
+    if (word === VOICE_COMMANDS.print) {
+      this.printLabel();
+    }
   };
 
   onRecordingStart = () => {
@@ -96,6 +155,17 @@ export default class App extends React.Component {
 
   onRecordingResult = ({ results }) => {
     let finalTranscript = '';
+    const lastWord = results[results.length - 1][0].transcript.trim().toLowerCase();
+
+    /**
+     * If the user issues a "stop" or "print" command we handle the
+     * action and then return, to prevent the command from being appended
+     * to the printed comment.
+     */
+    if (this.commandIssued(lastWord)) {
+      this.handleCommand(lastWord);
+      return;
+    }
 
     Object.values(results).forEach(result => {
       finalTranscript = this.state.comment + result[0].transcript;
@@ -123,7 +193,7 @@ export default class App extends React.Component {
   };
 
   handlePrint = () => {
-    alert(`printing: ${this.state.comment}`);
+    this.printLabel();
   };
 
   handleRecord = () => {
@@ -145,32 +215,40 @@ export default class App extends React.Component {
   };
 
   render = () => {
-    const canClear = !this.state.recording && this.state.comment.length;
-    const canPrint = canClear && this.getCharacterCount() > 0 && this.state.printer;
-    const canRecord = this.state.canRecord;
+    const { comment, canRecord, recording, printerFound } = this.state;
+    const actions = {
+      [USER_ACTIONS.clear]: {
+        handler: this.handleClear,
+        disable: recording || !comment.length
+      },
+      [USER_ACTIONS.print]: {
+        handler: this.handlePrint,
+        disable: recording || !comment.length || this.getCharacterCount() <= 0 || !printerFound
+      },
+      [USER_ACTIONS.record]: {
+        handler: this.handleRecord,
+        disable: !canRecord
+      }
+    };
 
     return (
       <Container>
         <React.Fragment>
-          {!this.state.printer && (
-            <Alert message="Could not find any connected label makers" theme="warning" />
+          {!printerFound && (
+            <Alert
+              message="No DYMO label printers found. Please connect a DYMO printer"
+              theme="warning"
+            />
           )}
 
           <TextBox
-            text={this.state.comment}
+            text={comment}
             charCount={this.getCharacterCount()}
             onChange={this.handleChange}
             onFocus={this.handleTextAreaFocus}
           />
-          <ActionPanel
-            canClear={canClear}
-            canRecord={canRecord}
-            canPrint={canPrint}
-            onClear={this.handleClear}
-            onRecord={this.handleRecord}
-            onPrint={this.handlePrint}
-            isRecording={this.state.recording}
-          />
+
+          <ActionPanel actions={actions} isRecording={recording} />
         </React.Fragment>
       </Container>
     );

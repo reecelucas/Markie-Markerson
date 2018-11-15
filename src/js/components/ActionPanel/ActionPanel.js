@@ -5,13 +5,21 @@ import { css, keyframes } from 'emotion';
 import { COLOURS, SPACING } from '../../../styles/theme';
 
 const propTypes = {
-  canClear: PropTypes.bool.isRequired,
-  canRecord: PropTypes.bool.isRequired,
-  canPrint: PropTypes.bool.isRequired,
-  onClear: PropTypes.func.isRequired,
-  onRecord: PropTypes.func.isRequired,
-  onPrint: PropTypes.func.isRequired,
-  isRecording: PropTypes.bool.isRequired
+  isRecording: PropTypes.bool.isRequired,
+  actions: PropTypes.shape({
+    clear: PropTypes.shape({
+      handler: PropTypes.func.isRequired,
+      disable: PropTypes.bool.isRequired
+    }).isRequired,
+    print: PropTypes.shape({
+      handler: PropTypes.func.isRequired,
+      disable: PropTypes.bool.isRequired
+    }).isRequired,
+    record: PropTypes.shape({
+      handler: PropTypes.func.isRequired,
+      disable: PropTypes.bool.isRequired
+    }).isRequired
+  }).isRequired
 };
 
 const blink = keyframes`
@@ -55,27 +63,27 @@ const recordStyles = isRecording => css`
   }
 `;
 
-const ActionPanel = ({
-  canPrint,
-  canClear,
-  canRecord,
-  onClear,
-  onPrint,
-  onRecord,
-  isRecording
-}) => (
-  <div className={styles}>
-    <Button className={clearStyles} onClick={onClear} disabled={!canClear}>
-      Clear
-    </Button>
-    <Button className={recordStyles(isRecording)} onClick={onRecord} disabled={!canRecord}>
-      {isRecording ? 'Recording' : 'Record'}
-    </Button>
-    <Button onClick={onPrint} disabled={!canPrint}>
-      Print Label
-    </Button>
-  </div>
-);
+const ActionPanel = ({ actions, isRecording }) => {
+  const { clear, print, record } = actions;
+
+  return (
+    <div className={styles}>
+      <Button className={clearStyles} onClick={clear.handler} disabled={clear.disable}>
+        Clear
+      </Button>
+      <Button
+        className={recordStyles(isRecording)}
+        onClick={record.handler}
+        disabled={record.disable}
+      >
+        {isRecording ? 'Recording' : 'Record'}
+      </Button>
+      <Button onClick={print.handler} disabled={print.disable}>
+        Print Label
+      </Button>
+    </div>
+  );
+};
 
 ActionPanel.propTypes = propTypes;
 

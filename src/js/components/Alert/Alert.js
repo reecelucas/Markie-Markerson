@@ -12,7 +12,6 @@ const propTypes = {
 };
 
 const alertIconSize = '24px';
-const alertBtnSize = '16px';
 const themes = {
   warning: {
     color: '#8a6d3b',
@@ -53,32 +52,10 @@ const styles = theme => css`
 const buttonStyles = css`
   align-self: center;
   color: currentColor;
-  height: ${alertBtnSize};
+  font-weight: 600;
+  letter-spacing: 0.025em;
   margin-left: auto;
-  position: relative;
-  transform: rotate(45deg);
-  width: ${alertBtnSize};
-
-  &:before,
-  &:after {
-    box-shadow: inset 0 0 0 ${alertBtnSize};
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  &:before {
-    height: 2px;
-    width: 100%;
-  }
-
-  &:after {
-    height: 100%;
-    width: 2px;
-  }
+  text-transform: uppercase;
 `;
 
 class Alert extends React.Component {
@@ -98,7 +75,9 @@ class Alert extends React.Component {
         aria-live="assertive"
       >
         {this.props.message}
-        <button className={buttonStyles} onClick={this.dismiss} aria-label="Close Alert" />
+        <button className={buttonStyles} onClick={this.dismiss}>
+          Dismiss
+        </button>
       </div>
     ) : null;
 }
