@@ -9,12 +9,11 @@ import {
   CHAR_LIMIT,
   LABEL_XML_TEMPLATE,
   LOCAL_STORAGE_KEY,
-  USER_ACTIONS,
   VOICE_COMMANDS
 } from './constants';
 
 export default class App extends React.Component {
-  timerId = null;
+  intervalId = null;
   recognition = null;
   ignoreRecordingEndEvent = false;
   label = null;
@@ -34,27 +33,31 @@ export default class App extends React.Component {
   componentDidMount() {
     if ('webkitSpeechRecognition' in window) {
       this.setState({ canRecord: true });
-      this.initialiseSpeechRecognition();
+      this.initSpeechRecognition();
     }
 
-    this.setupPrinter();
-    this.autoSave();
+    this.initPrinterSetup();
+    this.initAutoSave();
   }
 
   componentWillUnmount() {
-    window.clearInterval(this.timerId);
+    window.clearInterval(this.intervalId);
   }
 
   /****************************************************
    ***** HELPERS **************************************
    ****************************************************/
 
-  autoSave = () => {
-    this.timerId = window.setInterval(() => {
-      saveToLocalStorage({
-        key: LOCAL_STORAGE_KEY,
-        value: this.state.comment
-      });
+  saveToLocal = () => {
+    saveToLocalStorage({
+      key: LOCAL_STORAGE_KEY,
+      value: this.state.comment
+    });
+  };
+
+  initAutoSave = () => {
+    this.intervalId = window.setInterval(() => {
+      this.saveToLocal();
     }, AUTO_SAVE_INTERVAL);
   };
 
@@ -97,7 +100,7 @@ export default class App extends React.Component {
     this.label.print(this.printerName);
   };
 
-  setupPrinter = () => {
+  initPrinterSetup = () => {
     if (!window.dymo) {
       return;
     }
@@ -110,7 +113,7 @@ export default class App extends React.Component {
    ***** SPEECH RECOGNITION API ***********************
    ****************************************************/
 
-  initialiseSpeechRecognition = () => {
+  initSpeechRecognition = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     this.recognition = new SpeechRecognition();
 
@@ -189,7 +192,9 @@ export default class App extends React.Component {
   };
 
   handleClear = () => {
-    this.setState({ comment: '' });
+    this.setState({ comment: '' }, () => {
+      this.saveToLocal();
+    });
   };
 
   handlePrint = () => {
@@ -215,17 +220,17 @@ export default class App extends React.Component {
   };
 
   render = () => {
-    const { comment, canRecord, recording, printerFound } = this.state;
+    const { comment, canRecord, recording, printerFound, error } = this.state;
     const actions = {
-      [USER_ACTIONS.clear]: {
+      clear: {
         handler: this.handleClear,
         disable: recording || !comment.length
       },
-      [USER_ACTIONS.print]: {
+      print: {
         handler: this.handlePrint,
         disable: recording || !comment.length || this.getCharacterCount() <= 0 || !printerFound
       },
-      [USER_ACTIONS.record]: {
+      record: {
         handler: this.handleRecord,
         disable: !canRecord
       }

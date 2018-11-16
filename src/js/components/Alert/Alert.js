@@ -38,6 +38,11 @@ const styles = theme => css`
   padding: ${SPACING.small};
   width: 100%;
 
+  span {
+    display: inline-block;
+    padding-right: ${SPACING.base};
+  }
+
   &:before {
     content: '';
     background: url(${themes[theme].icon}) no-repeat center center / 100% 100% transparent;
@@ -74,7 +79,7 @@ class Alert extends React.Component {
         role="alert"
         aria-live="assertive"
       >
-        {this.props.message}
+        <span>{this.props.message}</span>
         <button className={buttonStyles} onClick={this.dismiss}>
           Dismiss
         </button>

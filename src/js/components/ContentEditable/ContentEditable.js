@@ -36,10 +36,7 @@ export default class ContentEditable extends React.Component {
 
   render = () => (
     <div
-      /**
-       * TODO: find out more about this!
-       * Fixes issue with `dangerouslySetInnerHTML` not firing consistently with `contentEditable`
-       */
+      // Fixes issue with `dangerouslySetInnerHTML` not firing consistently with `contentEditable`
       key={Math.random()}
       ref={this.ref}
       contentEditable
