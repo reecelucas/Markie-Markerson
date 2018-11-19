@@ -120,6 +120,8 @@ export default class App extends React.Component {
     /**
      * 1. Recognition will continue while the user is silent.
      * 2. Interim results will not be emitted while recognition occurs.
+     *    This means the `onresult` callback will only fire once the
+     *    final interpreted transcript is returned.
      */
     this.recognition.lang = 'en-UK';
     this.recognition.continuous = true; /* [1] */
@@ -193,8 +195,18 @@ export default class App extends React.Component {
 
   handleClear = () => {
     this.setState({ comment: '' }, () => {
-      this.saveToLocal();
+      this.saveToLocal(); // Clear the cached comment
     });
+  };
+
+  handleFocus = () => {
+    if (this.recognition && this.state.recording) {
+      /**
+       * The user's expressed an intent to edit the recorded comment, so we
+       * stop recording to ensure there's no conflicting updates.
+       */
+      this.recognition.stop();
+    }
   };
 
   handlePrint = () => {
@@ -213,14 +225,8 @@ export default class App extends React.Component {
     }
   };
 
-  handleTextAreaFocus = () => {
-    if (this.recognition && this.state.recording) {
-      this.recognition.stop();
-    }
-  };
-
   render = () => {
-    const { comment, canRecord, recording, printerFound, error } = this.state;
+    const { comment, canRecord, recording, printerFound } = this.state;
     const actions = {
       clear: {
         handler: this.handleClear,
@@ -248,9 +254,9 @@ export default class App extends React.Component {
 
           <TextBox
             text={comment}
-            charCount={this.getCharacterCount()}
+            characterCount={this.getCharacterCount()}
             onChange={this.handleChange}
-            onFocus={this.handleTextAreaFocus}
+            onFocus={this.handleFocus}
           />
 
           <ActionPanel actions={actions} isRecording={recording} />

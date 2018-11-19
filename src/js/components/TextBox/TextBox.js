@@ -8,7 +8,7 @@ const propTypes = {
   onChange: PropTypes.func.isRequired,
   onFocus: PropTypes.func.isRequired,
   text: PropTypes.string.isRequired,
-  charCount: PropTypes.number.isRequired
+  characterCount: PropTypes.number.isRequired
 };
 
 const styles = css`
@@ -43,10 +43,10 @@ const styles = css`
   }
 `;
 
-const TextBox = ({ text, charCount, onChange, onFocus }) => (
+const TextBox = ({ text, characterCount, onChange, onFocus }) => (
   <div className={styles}>
     <h1>
-      Comments <span>{charCount}</span>
+      Comments <span>{characterCount}</span>
     </h1>
 
     <ContentEditable html={text} onChange={onChange} onFocus={onFocus} />
