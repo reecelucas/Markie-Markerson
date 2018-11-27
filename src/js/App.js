@@ -3,10 +3,10 @@ import Container from './components/Container/Container';
 import TextBox from './components/TextBox/TextBox';
 import ActionPanel from './components/ActionPanel/ActionPanel';
 import Alert from './components/Alert/Alert';
+import getCharacterCount from './helpers/getCharacterCount';
 import { saveToLocalStorage, fetchFromLocalStorage } from './helpers/local-storage';
 import {
   AUTO_SAVE_INTERVAL,
-  CHAR_LIMIT,
   LABEL_XML_TEMPLATE,
   LOCAL_STORAGE_KEY,
   VOICE_COMMANDS
@@ -59,17 +59,6 @@ export default class App extends React.Component {
     this.intervalId = window.setInterval(() => {
       this.saveToLocal();
     }, AUTO_SAVE_INTERVAL);
-  };
-
-  getCharacterCount = () => {
-    /**
-     * Remove HTML tags from the comment string, since we don't
-     * want these included in the character count. We could use
-     * the DOM here (https://tinyurl.com/ydy6s7r9), but we'd need to
-     * sanitize the input, and the DOM is pretty slow for this use case.
-     */
-    const cleanComment = this.state.comment.replace(/(<([^>]+)>)/gi, '');
-    return CHAR_LIMIT - cleanComment.length;
   };
 
   /****************************************************
@@ -234,7 +223,7 @@ export default class App extends React.Component {
       },
       print: {
         handler: this.handlePrint,
-        disable: recording || !comment.length || this.getCharacterCount() <= 0 || !printerFound
+        disable: recording || !comment.length || getCharacterCount(comment) <= 0 || !printerFound
       },
       record: {
         handler: this.handleRecord,
@@ -254,7 +243,7 @@ export default class App extends React.Component {
 
           <TextBox
             text={comment}
-            characterCount={this.getCharacterCount()}
+            characterCount={getCharacterCount(comment)}
             onChange={this.handleChange}
             onFocus={this.handleFocus}
           />
