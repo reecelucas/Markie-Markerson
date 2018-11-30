@@ -63,7 +63,7 @@ const buttonStyles = css`
   text-transform: uppercase;
 `;
 
-class Alert extends React.Component {
+class Alert extends React.PureComponent {
   state = {
     show: true
   };
@@ -89,4 +89,4 @@ class Alert extends React.Component {
 
 Alert.propTypes = propTypes;
 
-export default React.memo(Alert);
+export default Alert;
