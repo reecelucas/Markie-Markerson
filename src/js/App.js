@@ -70,14 +70,23 @@ export default class App extends React.Component {
   };
 
   getPrinterName = () => {
-    // Get printer. For simplicity just use the first LabelWriter printer
-    const printers = window.dymo.label.framework.getPrinters();
-    const firstPrinter = printers.find(({ printerType }) => printerType === 'LabelWriterPrinter');
+    window.dymo.label.framework
+      .getPrintersAsync()
+      .then(printers => {
+        // For simplicity, just grab the first compatible printer we find
+        const firstPrinter = printers.find(
+          ({ printerType }) => printerType === 'LabelWriterPrinter'
+        );
 
-    if (firstPrinter && firstPrinter.name) {
-      this.setState({ printerFound: true });
-      this.printerName = firstPrinter.name;
-    }
+        if (firstPrinter && firstPrinter.isConnected && firstPrinter.name) {
+          this.setState({ printerFound: true });
+          this.printerName = firstPrinter.name;
+        }
+      })
+      .thenCatch(error => {
+        // Handle errors using DYMO's weird non-standard `thenCatch` method
+        console.error(error);
+      });
   };
 
   printLabel = () => {
@@ -85,8 +94,11 @@ export default class App extends React.Component {
       return;
     }
 
-    this.label.setObjectText('Comment', this.state.comment);
-    this.label.print(this.printerName);
+    const labelSet = new window.dymo.label.framework.LabelSetBuilder();
+    const textMarkup = `<font family="Arial">${this.state.comment}</font>`;
+    labelSet.addRecord().setTextMarkup('COMMENT', textMarkup);
+
+    this.label.print(this.printerName, null, labelSet.toString());
   };
 
   initPrinterSetup = () => {
@@ -94,8 +106,14 @@ export default class App extends React.Component {
       return;
     }
 
-    this.constructLabel();
-    this.getPrinterName();
+    if (process.env.NODE_ENV !== 'production') {
+      window.dymo.label.framework.trace = 1; // Enable debug for development
+    }
+
+    window.dymo.label.framework.init(() => {
+      this.constructLabel();
+      this.getPrinterName();
+    });
   };
 
   /****************************************************
