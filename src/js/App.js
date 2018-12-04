@@ -4,6 +4,7 @@ import TextBox from './components/TextBox/TextBox';
 import ActionPanel from './components/ActionPanel/ActionPanel';
 import Alert from './components/Alert/Alert';
 import getCharacterCount from './helpers/getCharacterCount';
+import wordWrap from './helpers/wordWrap';
 import { saveToLocalStorage, fetchFromLocalStorage } from './helpers/local-storage';
 import {
   AUTO_SAVE_INTERVAL,
@@ -94,8 +95,9 @@ export default class App extends React.Component {
       return;
     }
 
+    const comment = wordWrap({ str: this.state.comment, length: 40 });
     const labelSet = new window.dymo.label.framework.LabelSetBuilder();
-    const textMarkup = `<font family="Arial">${this.state.comment}</font>`;
+    const textMarkup = `<font size="14">${comment}</font>`;
     labelSet.addRecord().setTextMarkup('COMMENT', textMarkup);
 
     this.label.print(this.printerName, null, labelSet.toString());
