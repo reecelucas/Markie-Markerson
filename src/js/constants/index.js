@@ -30,7 +30,7 @@ export const LABEL_XML_TEMPLATE =
         <IsVariable>False</IsVariable>\
         <HorizontalAlignment>Left</HorizontalAlignment>\
         <VerticalAlignment>Top</VerticalAlignment>\
-        <TextFitMode>AlwaysFit</TextFitMode>\
+        <TextFitMode>ShrinkToFit</TextFitMode>\
         <UseFullFontHeight>True</UseFullFontHeight>\
         <Verticalized>False</Verticalized>\
         <StyledText/>\
