@@ -1,4 +1,5 @@
 import { CHAR_LIMIT } from '../constants';
+const sanitizeHtml = require('sanitize-html');
 
 export default string => {
   /**
@@ -7,6 +8,6 @@ export default string => {
    * the DOM here (https://tinyurl.com/ydy6s7r9), but we'd need to
    * sanitize the input, and the DOM is pretty slow for this use case.
    */
-  const cleanedString = string.replace(/(<([^>]+)>)/gi, '');
+  const cleanedString = sanitizeHtml(string, { allowedTags: [] });
   return CHAR_LIMIT - cleanedString.length;
 };

@@ -13,6 +13,8 @@ import {
   VOICE_COMMANDS
 } from './constants';
 
+const sanitizeHtml = require('sanitize-html');
+
 export default class App extends React.Component {
   intervalId = null;
   recognition = null;
@@ -95,9 +97,13 @@ export default class App extends React.Component {
       return;
     }
 
-    const comment = wordWrap({ str: this.state.comment, length: 40 });
+    const cleanedComment = sanitizeHtml(this.state.comment, {
+      // Allow only the tags that are valid in the DYMO label XML
+      allowedTags: ['b', 'i', 'u']
+    });
+    const wrappedComment = wordWrap({ str: cleanedComment, length: 50 });
     const labelSet = new window.dymo.label.framework.LabelSetBuilder();
-    const textMarkup = `<font size="14">${comment}</font>`;
+    const textMarkup = `<font size="14">${wrappedComment}</font>`;
     labelSet.addRecord().setTextMarkup('COMMENT', textMarkup);
 
     this.label.print(this.printerName, null, labelSet.toString());
@@ -243,7 +249,7 @@ export default class App extends React.Component {
       },
       print: {
         handler: this.handlePrint,
-        disable: recording || !comment.length || getCharacterCount(comment) <= 0 || !printerFound
+        disable: recording || !comment.length || getCharacterCount(comment) < 0 || !printerFound
       },
       record: {
         handler: this.handleRecord,
