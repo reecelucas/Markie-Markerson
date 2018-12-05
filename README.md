@@ -21,7 +21,7 @@ Installing the DYMO driver should have made an icon appear somewhere on your com
 Assuming everything is fine so far, you can now follow these steps to get up and running:
 
 1. Connect your DYMO label printer (or wirelessly connect if you're using the Wireless model)
-1. Visit [url_here](/) in Chrome.
+1. Visit <https://markie-markerson.netlify.com/> in Chrome.
 
 You can type into the comment box just like a regular text editor, or you can press "record" and speak to add your comment. When recording a comment, saying the word **"stop"** will stop the recording, saying **"print"** will print the comment on the connected label printer.
 
