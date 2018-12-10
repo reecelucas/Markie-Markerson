@@ -28,4 +28,9 @@ const splitString = (str, length) => {
   return strings;
 };
 
-export default ({ str, length = 70, br = '<br/>' }) => splitString(str, length).join(br);
+export default (str, length = 70) =>
+  str
+    .split('<br>') // Split string at `br` tags
+    .filter(segment => segment.length) // Remove empty strings
+    .map(segment => splitString(segment, length).join('<br/>')) // Split these chunks if they're longer then `length`
+    .join('<br/>'); // Join it all back up

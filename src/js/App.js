@@ -5,6 +5,7 @@ import ActionPanel from './components/ActionPanel/ActionPanel';
 import Alert from './components/Alert/Alert';
 import getCharacterCount from './helpers/getCharacterCount';
 import wordWrap from './helpers/wordWrap';
+import formatComment from './helpers/formatComment';
 import { saveToLocalStorage, fetchFromLocalStorage } from './helpers/local-storage';
 import {
   AUTO_SAVE_INTERVAL,
@@ -97,13 +98,13 @@ export default class App extends React.Component {
       return;
     }
 
-    const cleanedComment = sanitizeHtml(this.state.comment, {
+    const wrappedComment = wordWrap(this.state.comment);
+    const cleanedComment = sanitizeHtml(wrappedComment, {
       // Allow only the tags that are valid in the DYMO label XML
-      allowedTags: ['b', 'i', 'u']
+      allowedTags: ['br', 'b', 'i', 'u']
     });
-    const wrappedComment = wordWrap({ str: cleanedComment, length: 50 });
     const labelSet = new window.dymo.label.framework.LabelSetBuilder();
-    const textMarkup = `<font size="14">${wrappedComment}</font>`;
+    const textMarkup = `<font size="14">${cleanedComment}</font>`;
     labelSet.addRecord().setTextMarkup('COMMENT', textMarkup);
 
     this.label.print(this.printerName, null, labelSet.toString());
@@ -191,7 +192,12 @@ export default class App extends React.Component {
       finalTranscript = this.state.comment + result[0].transcript;
     });
 
-    this.setState({ comment: finalTranscript });
+    /**
+     * The casing of the `finalTranscript` can be a bit wayward, so
+     * we format it before setting state to avoid the user having to
+     * manually correct missing/incorrect capitalisation.
+     */
+    this.setState({ comment: formatComment(finalTranscript) });
   };
 
   onRecordingError = ({ error }) => {
