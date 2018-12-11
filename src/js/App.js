@@ -5,7 +5,7 @@ import ActionPanel from './components/ActionPanel/ActionPanel';
 import Alert from './components/Alert/Alert';
 import getCharacterCount from './helpers/getCharacterCount';
 import wordWrap from './helpers/wordWrap';
-import formatComment from './helpers/formatComment';
+import toSentenceCase from './helpers/toSentenceCase';
 import { saveToLocalStorage, fetchFromLocalStorage } from './helpers/local-storage';
 import {
   AUTO_SAVE_INTERVAL,
@@ -27,6 +27,7 @@ export default class App extends React.Component {
     canRecord: false,
     recording: false,
     printerFound: false,
+    recordingError: '',
     comment: fetchFromLocalStorage(LOCAL_STORAGE_KEY) || ''
   };
 
@@ -100,7 +101,7 @@ export default class App extends React.Component {
 
     const wrappedComment = wordWrap(this.state.comment);
     const cleanedComment = sanitizeHtml(wrappedComment, {
-      // Allow only the tags that are valid in the DYMO label XML
+      // Allow only the HTML tags that are valid in the DYMO label XML
       allowedTags: ['br', 'b', 'i', 'u']
     });
     const labelSet = new window.dymo.label.framework.LabelSetBuilder();
@@ -162,8 +163,11 @@ export default class App extends React.Component {
   };
 
   onRecordingStart = () => {
-    this.setState({ recording: true });
     this.ignoreRecordingEndEvent = false;
+    this.setState({
+      recording: true,
+      recordingError: '' // Reset any errors from the previous recording
+    });
   };
 
   onRecordingEnd = () => {
@@ -193,17 +197,23 @@ export default class App extends React.Component {
     });
 
     /**
-     * The casing of the `finalTranscript` can be a bit wayward, so
+     * The casing of the generated transcript can be a bit wayward, so
      * we format it before setting state to avoid the user having to
      * manually correct missing/incorrect capitalisation.
      */
-    this.setState({ comment: formatComment(finalTranscript) });
+    this.setState({ comment: toSentenceCase(finalTranscript) });
   };
 
   onRecordingError = ({ error }) => {
     if (error === 'no-speech' || error === 'audio-capture' || error === 'not-allowed') {
       this.ignoreRecordingEndEvent = true;
+      return;
     }
+
+    this.setState({
+      recordingError: error,
+      recording: false
+    });
   };
 
   /****************************************************
@@ -247,7 +257,7 @@ export default class App extends React.Component {
   };
 
   render = () => {
-    const { comment, canRecord, recording, printerFound } = this.state;
+    const { comment, canRecord, recording, printerFound, recordingError } = this.state;
     const actions = {
       clear: {
         handler: this.handleClear,
@@ -266,6 +276,7 @@ export default class App extends React.Component {
     return (
       <Container>
         <React.Fragment>
+          {recordingError && <Alert message={recordingError} theme="error" />}
           {!printerFound && (
             <Alert
               message="No DYMO label printers found. Please connect a DYMO printer"
