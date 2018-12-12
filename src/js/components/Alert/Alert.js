@@ -34,7 +34,7 @@ const styles = theme => css`
   border-radius: 2px;
   color: ${themes[theme].color};
   display: flex;
-  margin-bottom: ${SPACING.large};
+  margin-bottom: ${SPACING.base};
   padding: ${SPACING.small};
   width: 100%;
 

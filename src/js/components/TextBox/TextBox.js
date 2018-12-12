@@ -11,6 +11,12 @@ const propTypes = {
   characterCount: PropTypes.number.isRequired
 };
 
+/**
+ * Note: setting `display: inline-block` on the contenteditable
+ * div ensures newlines are created using `br` tags not `div` tags
+ * (see: https://tinyurl.com/ybndot2l). `br` tags are required for
+ * correctly formatting the label XML.
+ */
 const styles = css`
   text-align: left;
   width: 100%;
@@ -33,7 +39,7 @@ const styles = css`
     border: 2px solid ${COLOURS.divider};
     border-radius: 0;
     color: ${COLOURS.secondaryText};
-    display: block;
+    display: inline-block;
     font-size: ${TYPE_SCALE[20]};
     margin-bottom: ${SPACING.base};
     min-height: 400px;
