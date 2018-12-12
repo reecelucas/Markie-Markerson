@@ -163,7 +163,6 @@ export default class App extends React.Component {
   };
 
   onRecordingStart = () => {
-    this.ignoreRecordingEndEvent = false;
     this.setState({
       recording: true,
       recordingError: '' // Reset any errors from the previous recording
@@ -172,6 +171,7 @@ export default class App extends React.Component {
 
   onRecordingEnd = () => {
     if (this.ignoreRecordingEndEvent) {
+      this.recognition.start();
       return;
     }
 
@@ -248,6 +248,8 @@ export default class App extends React.Component {
     if (!this.recognition) {
       return;
     }
+
+    this.ignoreRecordingEndEvent = false;
 
     if (!this.state.recording) {
       this.recognition.start();

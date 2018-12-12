@@ -28,7 +28,7 @@ const splitString = (str, length) => {
   return strings;
 };
 
-export default (str, length = 70) =>
+export default (str, length = 60) =>
   str
     .split('<br>') // Split string at `br` tags
     .filter(segment => segment.length) // Remove empty strings
