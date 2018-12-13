@@ -8,7 +8,7 @@
  *
  * TODO: this has been crudely adapted to work when a full-stop
  * proceeds a <br> tag. Really this should be incorporated into the
- * existing regex
+ * existing regex.
  */
 
 export default comment =>
