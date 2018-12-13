@@ -154,12 +154,17 @@ export default class App extends React.Component {
   commandIssued = word => VOICE_COMMANDS[word];
 
   handleCommand = word => {
-    // We want to stop recognition for both "stop" and "print" commands
-    this.recognition.stop();
+    if (word === VOICE_COMMANDS.break) {
+      this.setState(prevState => ({ comment: `${prevState.comment}<br/>` }));
+      return;
+    }
 
     if (word === VOICE_COMMANDS.print) {
       this.printLabel();
     }
+
+    // We want to stop recognition for both "stop" and "print" commands
+    this.recognition.stop();
   };
 
   onRecordingStart = () => {
@@ -201,6 +206,7 @@ export default class App extends React.Component {
      * we format it before setting state to avoid the user having to
      * manually correct missing/incorrect capitalisation.
      */
+    console.log({ comment: toSentenceCase(finalTranscript) });
     this.setState({ comment: toSentenceCase(finalTranscript) });
   };
 
