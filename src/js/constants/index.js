@@ -3,7 +3,8 @@ export const AUTO_SAVE_INTERVAL = 2500;
 export const LOCAL_STORAGE_KEY = 'MARK_SAVER_CACHE';
 export const VOICE_COMMANDS = {
   stop: 'stop',
-  print: 'print'
+  print: 'print',
+  break: 'break'
 };
 
 /**
