@@ -19,8 +19,3 @@ export default comment =>
       .map(segment => `${segment.charAt(0).toUpperCase()}${segment.substr(1).toLowerCase()}`)
       .join('');
   });
-
-/**
- * Rules:
- * Uppercase all characters after the following: . ! ? .<br> !<br> ?<br>
- */
