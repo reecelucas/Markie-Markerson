@@ -4,7 +4,7 @@ import TextBox from './components/TextBox/TextBox';
 import ActionPanel from './components/ActionPanel/ActionPanel';
 import Alert from './components/Alert/Alert';
 import getCharacterCount from './helpers/getCharacterCount';
-import wordWrap from './helpers/wordWrap';
+import formatXmlString from './helpers/formatXmlString';
 import toSentenceCase from './helpers/toSentenceCase';
 import { saveToLocalStorage, fetchFromLocalStorage } from './helpers/local-storage';
 import {
@@ -99,8 +99,8 @@ export default class App extends React.Component {
       return;
     }
 
-    const wrappedComment = wordWrap(this.state.comment);
-    const cleanedComment = sanitizeHtml(wrappedComment, {
+    const formattedComment = formatXmlString(this.state.comment);
+    const cleanedComment = sanitizeHtml(formattedComment, {
       // Allow only the HTML tags that are valid in the DYMO label XML
       allowedTags: ['br', 'b', 'i', 'u']
     });
@@ -206,7 +206,6 @@ export default class App extends React.Component {
      * we format it before setting state to avoid the user having to
      * manually correct missing/incorrect capitalisation.
      */
-    console.log({ comment: toSentenceCase(finalTranscript) });
     this.setState({ comment: toSentenceCase(finalTranscript) });
   };
 

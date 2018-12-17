@@ -31,6 +31,7 @@ const splitString = (str, length) => {
 export default (str, length = 60) =>
   str
     .split('<br>') // Split string at `br` tags
-    .filter(segment => segment.length) // Remove empty strings
-    .map(segment => splitString(segment, length).join('<br/>')) // Split these chunks if they're longer then `length`
+    .filter(Boolean) // Remove empty strings
+    .map(segment => segment.replace(/&nbsp;/gi, '').trim()) // Remove `&nbsp;` characters and trim leading and trailing whitespace
+    .map(segment => splitString(segment, length).join('<br/>')) // Split these chunks if they're longer than `length`
     .join('<br/>'); // Join it all back up
