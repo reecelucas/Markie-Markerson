@@ -72,19 +72,20 @@ class Alert extends React.PureComponent {
     this.setState({ show: false });
   };
 
-  render = () =>
-    this.state.show ? (
-      <div
-        className={cx(styles(this.props.theme), this.props.className)}
-        role="alert"
-        aria-live="assertive"
-      >
-        <span>{this.props.message}</span>
-        <button className={buttonStyles} onClick={this.dismiss}>
-          Dismiss
-        </button>
-      </div>
-    ) : null;
+  renderAlert = () => (
+    <div
+      className={cx(styles(this.props.theme), this.props.className)}
+      role="alert"
+      aria-live="assertive"
+    >
+      <span>{this.props.message}</span>
+      <button className={buttonStyles} onClick={this.dismiss}>
+        Dismiss
+      </button>
+    </div>
+  );
+
+  render = () => (this.state.show ? this.renderAlert() : null);
 }
 
 Alert.propTypes = propTypes;
