@@ -37,18 +37,18 @@ You can format text in the following ways:
 
 Once you've cloned the repo, install all the things:
 
-```sh
+```Bash
 npm install
 ```
 
 To start the hot-reloading development server, run:
 
-```sh
+```Bash
 npm start
 ```
 
 To build files for production in the `dist` directory, run:
 
-```sh
+```Bash
 npm run build
 ```
