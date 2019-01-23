@@ -28,10 +28,11 @@ const splitString = (str, length) => {
   return strings;
 };
 
-export default (str, length = 60) =>
+export default (str, maxLength = 60) =>
   str
-    .split('<br>') // Split string at `br` tags
+    .split(/<br\s*\/?>/) // Split on break tags
     .filter(Boolean) // Remove empty strings
-    .map(segment => segment.replace(/&nbsp;/gi, '').trim()) // Remove `&nbsp;` characters and trim leading and trailing whitespace
-    .map(segment => splitString(segment, length).join('<br/>')) // Split these chunks if they're longer than `length`
+    .map(line => line.replace(/&nbsp;/gi, '')) // Remove `&nbsp`, since they aren't stripped out by `sanitizeHtml`
+    .map(line => (line.length > maxLength ? splitString(line, maxLength) : line)) // Split long lines
+    .flat() // We can use this since tbis app only works in Chrome
     .join('<br/>'); // Join it all back up
