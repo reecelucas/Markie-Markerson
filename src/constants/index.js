@@ -1,4 +1,5 @@
 export const CHAR_LIMIT = 400;
+export const AUTO_SAVE_INTERVAL = 2500;
 export const LOCAL_STORAGE_KEY = 'MARKIE_SAVER_CACHE';
 export const VOICE_COMMANDS = {
   stop: 'stop',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Layout from '../components/Layout/Layout';
 import Container from '../components/Container/Container';
 import TextBox from '../components/TextBox/TextBox';
@@ -7,11 +7,13 @@ import Alert from '../components/Alert/Alert';
 import getCharacterCount from '../helpers/getCharacterCount';
 import formatXmlString from '../helpers/formatXmlString';
 import capitaliseSentence from '../helpers/capitaliseSentence';
+import log from '../helpers/log';
 import {
   saveToLocalStorage,
   fetchFromLocalStorage
 } from '../helpers/local-storage';
 import {
+  AUTO_SAVE_INTERVAL,
   LABEL_XML_TEMPLATE,
   LOCAL_STORAGE_KEY,
   VOICE_COMMANDS
@@ -19,57 +21,65 @@ import {
 
 const sanitizeHtml = require('sanitize-html');
 
-const IndexPage = () => {
-  let recognition = null;
-  let ignoreRecordingEndEvent = false;
-  let label = null;
-  let printerName = '';
+export default class IndexPage extends React.Component {
+  intervalId = null;
+  recognition = null;
+  ignoreRecordingEndEvent = false;
+  label = null;
+  printerName = '';
 
-  const [canRecord, setCanRecord] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const [printerFound, setPrinterFound] = useState(false);
-  const [recordingError, setRecordingError] = useState('');
-  const [comment, setComment] = useState(
-    fetchFromLocalStorage(LOCAL_STORAGE_KEY) || ''
-  );
+  state = {
+    canRecord: false,
+    recording: false,
+    printerFound: false,
+    recordingError: '',
+    comment: fetchFromLocalStorage(LOCAL_STORAGE_KEY) || ''
+  };
 
   /****************************************************
    ***** LIFECYCLE ************************************
    ****************************************************/
 
-  useEffect(() => {
+  componentDidMount() {
     if ('webkitSpeechRecognition' in window) {
-      setCanRecord(true);
-      initSpeechRecognition();
+      this.setState({ canRecord: true });
+      this.initSpeechRecognition();
     }
 
-    initPrinterSetup();
-  }, []);
+    this.initPrinterSetup();
+    this.initAutoSave();
+  }
 
-  useEffect(() => {
-    saveToLocal();
-  }, [comment]);
+  componentWillUnmount() {
+    window.clearInterval(this.intervalId);
+  }
 
   /****************************************************
    ***** HELPERS **************************************
    ****************************************************/
 
-  const saveToLocal = () => {
+  saveToLocal = () => {
     saveToLocalStorage({
       key: LOCAL_STORAGE_KEY,
-      value: comment
+      value: this.state.comment
     });
+  };
+
+  initAutoSave = () => {
+    this.intervalId = window.setInterval(() => {
+      this.saveToLocal();
+    }, AUTO_SAVE_INTERVAL);
   };
 
   /****************************************************
    ***** DYMO LABEL PRINTER API ***********************
    ****************************************************/
 
-  const constructLabel = () => {
-    label = window.dymo.label.framework.openLabelXml(LABEL_XML_TEMPLATE);
+  constructLabel = () => {
+    this.label = window.dymo.label.framework.openLabelXml(LABEL_XML_TEMPLATE);
   };
 
-  const getPrinterName = () => {
+  getPrinterName = () => {
     window.dymo.label.framework
       .getPrintersAsync()
       .then(printers => {
@@ -79,20 +89,20 @@ const IndexPage = () => {
         );
 
         if (firstPrinter && firstPrinter.isConnected && firstPrinter.name) {
-          setPrinterFound(true);
-          printerName = firstPrinter.name;
+          this.setState({ printerFound: true });
+          this.printerName = firstPrinter.name;
         }
       })
-      .thenCatch(error => {
-        // Handle errors using DYMO's weird non-standard `thenCatch` method
-        console.error(error);
-      });
+      // Handle errors using DYMO's weird non-standard `thenCatch` method
+      .thenCatch(log.red);
   };
 
-  const printLabel = () => {
-    if (!label) return;
+  printLabel = () => {
+    if (!this.label) {
+      return;
+    }
 
-    const formattedComment = formatXmlString(comment);
+    const formattedComment = formatXmlString(this.state.comment);
     const cleanedComment = sanitizeHtml(formattedComment, {
       // Allow only the HTML tags that are valid in the DYMO label XML
       allowedTags: ['br', 'b', 'i', 'u']
@@ -101,19 +111,21 @@ const IndexPage = () => {
     const textMarkup = `<font size="14">${cleanedComment}</font>`;
     labelSet.addRecord().setTextMarkup('COMMENT', textMarkup);
 
-    label.print(printerName, null, labelSet.toString());
+    this.label.print(this.printerName, null, labelSet.toString());
   };
 
-  const initPrinterSetup = () => {
-    if (!window.dymo) return;
+  initPrinterSetup = () => {
+    if (!window.dymo) {
+      return;
+    }
 
     if (process.env.NODE_ENV !== 'production') {
       window.dymo.label.framework.trace = 1; // Enable debug for development
     }
 
     window.dymo.label.framework.init(() => {
-      constructLabel();
-      getPrinterName();
+      this.constructLabel();
+      this.getPrinterName();
     });
   };
 
@@ -121,10 +133,10 @@ const IndexPage = () => {
    ***** SPEECH RECOGNITION API ***********************
    ****************************************************/
 
-  const initSpeechRecognition = () => {
+  initSpeechRecognition = () => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
+    this.recognition = new SpeechRecognition();
 
     /**
      * 1. Recognition will continue while the user is silent.
@@ -132,48 +144,50 @@ const IndexPage = () => {
      *    This means the `onresult` callback will only fire once the
      *    final interpreted transcript is returned.
      */
-    recognition.lang = 'en-UK';
-    recognition.continuous = true; /* [1] */
-    recognition.interimResults = false; /* [2] */
+    this.recognition.lang = 'en-UK';
+    this.recognition.continuous = true; /* [1] */
+    this.recognition.interimResults = false; /* [2] */
 
     // Bind event handlers
-    recognition.onstart = onRecordingStart;
-    recognition.onresult = onRecordingResult;
-    recognition.onend = onRecordingEnd;
-    recognition.onerror = onRecordingError;
+    this.recognition.onstart = this.onRecordingStart;
+    this.recognition.onresult = this.onRecordingResult;
+    this.recognition.onend = this.onRecordingEnd;
+    this.recognition.onerror = this.onRecordingError;
   };
 
-  const commandIssued = word => VOICE_COMMANDS[word];
+  commandIssued = word => VOICE_COMMANDS[word];
 
-  const handleCommand = word => {
+  handleCommand = word => {
     if (word === VOICE_COMMANDS.break) {
-      setComment(comment => `${comment}<br>`);
+      this.setState(prevState => ({ comment: `${prevState.comment}<br/>` }));
       return;
     }
 
     if (word === VOICE_COMMANDS.print) {
-      printLabel();
+      this.printLabel();
     }
 
     // We want to stop recognition for both "stop" and "print" commands
-    recognition.stop();
+    this.recognition.stop();
   };
 
-  const onRecordingStart = () => {
-    setRecording(true);
-    setRecordingError(''); // Reset any errors from the previous recording
+  onRecordingStart = () => {
+    this.setState({
+      recording: true,
+      recordingError: '' // Reset any errors from the previous recording
+    });
   };
 
-  const onRecordingEnd = () => {
-    if (ignoreRecordingEndEvent) {
-      recognition.start();
+  onRecordingEnd = () => {
+    if (this.ignoreRecordingEndEvent) {
+      this.recognition.start();
       return;
     }
 
-    setRecording(false);
+    this.setState({ recording: false });
   };
 
-  const onRecordingResult = ({ results }) => {
+  onRecordingResult = ({ results }) => {
     let finalTranscript = '';
     const lastWord = results[results.length - 1][0].transcript
       .trim()
@@ -184,13 +198,13 @@ const IndexPage = () => {
      * action and then return, to prevent the command from being appended
      * to the printed comment.
      */
-    if (commandIssued(lastWord)) {
-      handleCommand(lastWord);
+    if (this.commandIssued(lastWord)) {
+      this.handleCommand(lastWord);
       return;
     }
 
     Object.values(results).forEach(result => {
-      finalTranscript = comment + result[0].transcript;
+      finalTranscript = this.state.comment + result[0].transcript;
     });
 
     /**
@@ -198,107 +212,119 @@ const IndexPage = () => {
      * we format it before setting state to avoid the user having to
      * manually correct missing/incorrect capitalisation.
      */
-    setComment(capitaliseSentence(finalTranscript));
+    this.setState({ comment: capitaliseSentence(finalTranscript) });
   };
 
-  const onRecordingError = ({ error }) => {
+  onRecordingError = ({ error }) => {
     if (
       error === 'no-speech' ||
       error === 'audio-capture' ||
       error === 'not-allowed'
     ) {
-      ignoreRecordingEndEvent = true;
+      this.ignoreRecordingEndEvent = true;
       return;
     }
 
-    setRecordingError(error);
-    setRecording(false);
+    this.setState({
+      recordingError: error,
+      recording: false
+    });
   };
 
   /****************************************************
    ***** EVENT HANDLERS *******************************
    ****************************************************/
 
-  const handleChange = html => {
-    setComment(html);
+  handleChange = html => {
+    this.setState({ comment: html });
   };
 
-  const handleClear = () => {
-    setComment('');
-    saveToLocal(); // Clear the cached comment
+  handleClear = () => {
+    this.setState({ comment: '' }, () => {
+      this.saveToLocal(); // Clear the cached comment
+    });
   };
 
-  const handleFocus = () => {
-    if (recognition && recording) {
+  handleFocus = () => {
+    if (this.recognition && this.state.recording) {
       /**
        * The user's expressed an intent to edit the recorded comment, so we
        * stop recording to ensure there's no conflicting updates.
        */
-      recognition.stop();
+      this.recognition.stop();
     }
   };
 
-  const handlePrint = () => {
-    printLabel();
+  handlePrint = () => {
+    this.printLabel();
   };
 
-  const handleRecord = () => {
-    if (!recognition) return;
+  handleRecord = () => {
+    if (!this.recognition) {
+      return;
+    }
 
-    ignoreRecordingEndEvent = false;
+    this.ignoreRecordingEndEvent = false;
 
-    if (!recording) {
-      recognition.start();
+    if (!this.state.recording) {
+      this.recognition.start();
     } else {
-      recognition.stop();
+      this.recognition.stop();
     }
   };
 
-  const actions = {
-    clear: {
-      handler: handleClear,
-      disable: recording || !comment.length
-    },
-    print: {
-      handler: handlePrint,
-      disable:
-        recording ||
-        !comment.length ||
-        getCharacterCount(comment) < 0 ||
-        !printerFound
-    },
-    record: {
-      handler: handleRecord,
-      disable: !canRecord
-    }
-  };
+  render = () => {
+    const {
+      comment,
+      canRecord,
+      recording,
+      printerFound,
+      recordingError
+    } = this.state;
+    const actions = {
+      clear: {
+        handler: this.handleClear,
+        disable: recording || !comment.length
+      },
+      print: {
+        handler: this.handlePrint,
+        disable:
+          recording ||
+          !comment.length ||
+          getCharacterCount(comment) < 0 ||
+          !printerFound
+      },
+      record: {
+        handler: this.handleRecord,
+        disable: !canRecord
+      }
+    };
 
-  return (
-    <Layout>
-      <Container>
-        <React.Fragment>
-          {recordingError && (
-            <Alert message={recordingError} appearance="error" />
-          )}
-          {!printerFound && (
-            <Alert
-              message="No DYMO label printers found. Please connect a DYMO printer"
-              appearance="warning"
+    return (
+      <Layout>
+        <Container>
+          <React.Fragment>
+            {recordingError && (
+              <Alert message={recordingError} appearance="error" />
+            )}
+            {!printerFound && (
+              <Alert
+                message="No DYMO label printers found. Please connect a DYMO printer"
+                appearance="warning"
+              />
+            )}
+
+            <TextBox
+              text={comment}
+              characterCount={getCharacterCount(comment)}
+              onChange={this.handleChange}
+              onFocus={this.handleFocus}
             />
-          )}
 
-          <TextBox
-            text={comment}
-            characterCount={getCharacterCount(comment)}
-            onChange={handleChange}
-            onFocus={handleFocus}
-          />
-
-          <ActionPanel actions={actions} isRecording={recording} />
-        </React.Fragment>
-      </Container>
-    </Layout>
-  );
-};
-
-export default IndexPage;
+            <ActionPanel actions={actions} isRecording={recording} />
+          </React.Fragment>
+        </Container>
+      </Layout>
+    );
+  };
+}
