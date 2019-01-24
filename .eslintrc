@@ -5,11 +5,7 @@
     "prettier",
     "prettier/react"
   ],
-  "plugins": [
-    "react",
-    "prettier",
-    "import"
-  ],
+  "plugins": ["react", "prettier", "import", "react-hooks"],
   "env": {
     "browser": true,
     "commonjs": true,
@@ -32,8 +28,7 @@
   "rules": {
     "no-console": "off",
     "comma-dangle": 0,
-    "react/jsx-filename-extension": [
-      1, { "extensions": [".js", ".jsx"] }
-    ]
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react-hooks/rules-of-hooks": "error"
   }
 }

@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 const propTypes = {
   onChange: PropTypes.func.isRequired,
   onFocus: PropTypes.func.isRequired,
-  html: PropTypes.string.isRequired
+  html: PropTypes.string.isRequired,
+  className: PropTypes.string
 };
 
 export default class ContentEditable extends React.Component {
@@ -38,6 +39,7 @@ export default class ContentEditable extends React.Component {
     <div
       // Fixes issue with `dangerouslySetInnerHTML` not firing consistently with `contentEditable`
       key={Math.random()}
+      className={this.props.className}
       ref={this.ref}
       contentEditable
       suppressContentEditableWarning

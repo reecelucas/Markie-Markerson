@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '../Button/Button';
-import { css, keyframes } from 'emotion';
-import { COLOURS, SPACING } from '../../../styles/theme';
+import { keyframes } from '@emotion/core';
+import styled from '@emotion/styled';
+import { COLOURS, SPACING } from '../../styles/theme';
 
 const propTypes = {
   isRecording: PropTypes.bool.isRequired,
@@ -32,7 +33,7 @@ const blink = keyframes`
   }
 `;
 
-const styles = css`
+const StyledContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   width: 100%;
@@ -42,17 +43,18 @@ const styles = css`
   }
 `;
 
-const clearStyles = css`
+const StyledClearButton = styled(Button)`
   background-color: transparent;
   color: ${COLOURS.accent};
   padding: ${SPACING.tiny};
 `;
 
-const recordStyles = isRecording => css`
+const StyledRecordButton = styled(Button)`
   background-color: ${COLOURS.accent};
 
   &:before {
-    animation: ${isRecording ? `${blink} 1.25s ease infinite both` : 'none'};
+    animation: ${props =>
+      props.isRecording ? `${blink} 1.25s ease infinite both` : 'none'};
     background-color: #ff003b;
     border-radius: 50%;
     content: '';
@@ -67,21 +69,30 @@ const ActionPanel = ({ actions, isRecording }) => {
   const { clear, print, record } = actions;
 
   return (
-    <div className={styles}>
-      <Button className={clearStyles} onClick={clear.handler} disabled={clear.disable}>
+    <StyledContainer>
+      <StyledClearButton
+        onClick={clear.handler}
+        disabled={clear.disable}
+        id="action-panel-clear-button"
+      >
         Clear
-      </Button>
-      <Button
-        className={recordStyles(isRecording)}
+      </StyledClearButton>
+      <StyledRecordButton
         onClick={record.handler}
         disabled={record.disable}
+        isRecording={isRecording}
+        id="action-panel-record-button"
       >
         {isRecording ? 'Recording' : 'Record'}
-      </Button>
-      <Button onClick={print.handler} disabled={print.disable}>
+      </StyledRecordButton>
+      <Button
+        onClick={print.handler}
+        disabled={print.disable}
+        id="action-panel-print-button"
+      >
         Print Label
       </Button>
-    </div>
+    </StyledContainer>
   );
 };
 

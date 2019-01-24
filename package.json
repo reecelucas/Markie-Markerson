@@ -1,46 +1,58 @@
 {
   "name": "markie-markerson",
+  "description": "A Web-based DYMO label printing application for simpler marking",
   "version": "1.0.0",
-  "description": "Web-based DYMO label printing application",
-  "main": "index.html",
-  "scripts": {
-    "start": "parcel src/index.html",
-    "build": "npm run clean && parcel build src/index.html && cp _headers dist/_headers",
-    "lint": "eslint 'src/js/**/*.js'",
-    "clean": "rimraf dist/*",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/reecelucas/markie-markerson.git"
-  },
-  "author": "Reece Lucas <reecelucas@sky.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/reecelucas/markie-markerson/issues"
-  },
-  "homepage": "https://github.com/reecelucas/markie-markerson#readme",
+  "authors": [
+    "Reece Lucas <reecelucas@sky.com> (https://github.com/reecelucas)"
+  ],
   "dependencies": {
-    "emotion": "^9.2.12",
+    "@emotion/core": "^10.0.5",
+    "@emotion/styled": "^10.0.5",
+    "emotion": "^10.0.5",
+    "emotion-server": "^10.0.5",
+    "sanitize-html": "^1.19.3",
+    "gatsby": "^2.0.53",
+    "gatsby-plugin-emotion": "^3.0.1",
+    "gatsby-plugin-manifest": "^2.0.9",
+    "gatsby-plugin-offline": "^2.0.20",
+    "gatsby-plugin-react-helmet": "^3.0.2",
+    "gatsby-source-filesystem": "^2.0.8",
     "prop-types": "^15.6.2",
-    "react": "^16.6.1",
-    "react-dom": "^16.6.1",
-    "react-emotion": "^9.2.12",
-    "sanitize-html": "^1.19.3"
+    "react": "^16.8.0-alpha.1",
+    "react-dom": "^16.8.0-alpha.1",
+    "react-helmet": "^5.2.0"
+  },
+  "keywords": [
+    "gatsby"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf public/*",
+    "serve": "gatsby serve",
+    "build": "yarn clean && gatsby build",
+    "develop": "gatsby develop",
+    "start": "npm run develop",
+    "format": "prettier --write \"src/**/*.js\"",
+    "lint": "eslint \"src/**/*.js\""
   },
   "devDependencies": {
-    "@babel/core": "^7.1.5",
-    "@babel/plugin-proposal-class-properties": "^7.1.0",
-    "@babel/preset-env": "^7.1.5",
-    "@babel/preset-react": "^7.0.0",
-    "babel-eslint": "^10.0.1",
+    "@babel/core": "^7.2.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-preset-gatsby": "^0.1.6",
     "eslint": "^5.9.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.11.1",
-    "parcel-bundler": "^1.11.0",
+    "eslint-plugin-react-hooks": "^0.0.0",
     "prettier": "^1.15.2",
     "rimraf": "^2.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reecelucas/markie-markerson.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reecelucas/markie-markerson/issues"
   }
 }

@@ -1,7 +1,7 @@
-import { injectGlobal } from 'emotion';
+import { css } from '@emotion/core';
 import { COLOURS, TYPE_SCALE } from './theme';
 
-export default injectGlobal`
+export default css`
   html {
     line-height: 1.15;
     -webkit-text-size-adjust: 100%;
@@ -95,24 +95,24 @@ export default injectGlobal`
   }
 
   button,
-  [type="button"],
-  [type="reset"],
-  [type="submit"] {
+  [type='button'],
+  [type='reset'],
+  [type='submit'] {
     -webkit-appearance: button;
   }
 
   button::-moz-focus-inner,
-  [type="button"]::-moz-focus-inner,
-  [type="reset"]::-moz-focus-inner,
-  [type="submit"]::-moz-focus-inner {
+  [type='button']::-moz-focus-inner,
+  [type='reset']::-moz-focus-inner,
+  [type='submit']::-moz-focus-inner {
     border-style: none;
     padding: 0;
   }
 
   button:-moz-focusring,
-  [type="button"]:-moz-focusring,
-  [type="reset"]:-moz-focusring,
-  [type="submit"]:-moz-focusring {
+  [type='button']:-moz-focusring,
+  [type='reset']:-moz-focusring,
+  [type='submit']:-moz-focusring {
     outline: 1px dotted ButtonText;
   }
 
@@ -137,24 +137,23 @@ export default injectGlobal`
     overflow: auto;
   }
 
-  [type="checkbox"],
-  [type="radio"] {
+  [type='checkbox'],
+  [type='radio'] {
     box-sizing: border-box;
     padding: 0;
   }
 
-
-  [type="number"]::-webkit-inner-spin-button,
-  [type="number"]::-webkit-outer-spin-button {
+  [type='number']::-webkit-inner-spin-button,
+  [type='number']::-webkit-outer-spin-button {
     height: auto;
   }
 
-  [type="search"] {
+  [type='search'] {
     -webkit-appearance: textfield;
     outline-offset: -2px;
   }
 
-  [type="search"]::-webkit-search-decoration {
+  [type='search']::-webkit-search-decoration {
     -webkit-appearance: none;
   }
 
@@ -226,7 +225,7 @@ export default injectGlobal`
   }
 
   ins {
-      border-bottom: 1px solid;
+    border-bottom: 1px solid;
   }
 
   ul,
@@ -242,7 +241,7 @@ export default injectGlobal`
     text-decoration: none;
   }
 
-  a[href^="http"]:empty:before {
+  a[href^='http']:empty:before {
     content: attr(href);
   }
 
@@ -276,7 +275,9 @@ export default injectGlobal`
   body {
     background-color: ${COLOURS.base};
     color: ${COLOURS.primaryText};
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol';
     letter-spacing: 0.025em;
     height: 100vh;
     overflow-x: hidden;
@@ -284,7 +285,12 @@ export default injectGlobal`
     -moz-osx-font-smoothing: grayscale;
   }
 
-  .root {
-    height: 100%;
+  body:not(.user-is-tabbing) a:focus,
+  body:not(.user-is-tabbing) button:focus,
+  body:not(.user-is-tabbing) input:focus,
+  body:not(.user-is-tabbing) select:focus,
+  body:not(.user-is-tabbing) textarea:focus,
+  body:not(.user-is-tabbing) div[contenteditable]:focus {
+    outline: none;
   }
 `;
