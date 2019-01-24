@@ -1,3 +1,5 @@
+import replaceNonBreakableSpaces from './replaceNonBreakableSpaces';
+
 /**
  * Splits a string into an array of strings of specified `length`,
  * ensuring that the split does not occur in the middle of a word.
@@ -32,7 +34,7 @@ export default (str, maxLength = 60) =>
   str
     .split(/<br\s*\/?>/) // Split on break tags
     .filter(Boolean) // Remove empty strings
-    .map(line => line.replace(/&nbsp;/gi, '')) // Remove `&nbsp`, since they aren't stripped out by `sanitizeHtml`
+    .map(replaceNonBreakableSpaces) // Remove `&nbsp` characters, since they aren't stripped out by `sanitizeHtml`
     .map(line => (line.length > maxLength ? splitString(line, maxLength) : line)) // Split long lines
     .flat() // We can use this since tbis app only works in Chrome
     .join('<br/>'); // Join it all back up

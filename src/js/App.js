@@ -5,7 +5,7 @@ import ActionPanel from './components/ActionPanel/ActionPanel';
 import Alert from './components/Alert/Alert';
 import getCharacterCount from './helpers/getCharacterCount';
 import formatXmlString from './helpers/formatXmlString';
-import toSentenceCase from './helpers/toSentenceCase';
+import capitaliseSentence from './helpers/capitaliseSentence';
 import { saveToLocalStorage, fetchFromLocalStorage } from './helpers/local-storage';
 import {
   AUTO_SAVE_INTERVAL,
@@ -206,7 +206,7 @@ export default class App extends React.Component {
      * we format it before setting state to avoid the user having to
      * manually correct missing/incorrect capitalisation.
      */
-    this.setState({ comment: toSentenceCase(finalTranscript) });
+    this.setState({ comment: capitaliseSentence(finalTranscript) });
   };
 
   onRecordingError = ({ error }) => {
