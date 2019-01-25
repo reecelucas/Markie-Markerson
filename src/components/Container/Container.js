@@ -4,7 +4,10 @@ import styled from '@emotion/styled';
 import { SPACING } from '../../styles/theme';
 
 const propTypes = {
-  children: PropTypes.element.isRequired
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node
+  ]).isRequired
 };
 
 const StyledContainer = styled.main`

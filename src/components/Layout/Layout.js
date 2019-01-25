@@ -59,7 +59,6 @@ const Layout = ({ children }) => {
       render={data => (
         <React.Fragment>
           <Helmet
-            htmlAttributes={{ lang: 'en-GB' }}
             title={data.site.siteMetadata.title}
             meta={[
               {

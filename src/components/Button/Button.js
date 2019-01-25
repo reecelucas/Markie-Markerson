@@ -37,7 +37,7 @@ const StyledButton = styled.button`
   text-transform: uppercase;
 
   &:disabled {
-    opacity: 0.3;
+    opacity: 0.4;
     pointer-events: none;
   }
 `;

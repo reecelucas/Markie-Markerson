@@ -35,6 +35,8 @@ export default (str, maxLength = 60) =>
     .split(/<br\s*\/?>/) // Split on break tags
     .filter(Boolean) // Remove empty strings
     .map(replaceNonBreakableSpaces) // Remove `&nbsp` characters, since they aren't stripped out by `sanitizeHtml`
-    .map(line => (line.length > maxLength ? splitString(line, maxLength) : line)) // Split long lines
-    .flat() // We can use this since tbis app only works in Chrome
+    .map(line =>
+      line.length > maxLength ? splitString(line, maxLength) : line
+    ) // Split long lines
+    .flat() // We can use this since this app only works in modern browsers
     .join('<br/>'); // Join it all back up

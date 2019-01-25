@@ -51,18 +51,17 @@ const StyledClearButton = styled(Button)`
 
 const StyledRecordButton = styled(Button)`
   background-color: ${COLOURS.accent};
+`;
 
-  &:before {
-    animation: ${props =>
-      props.isRecording ? `${blink} 1.25s ease infinite both` : 'none'};
-    background-color: #ff003b;
-    border-radius: 50%;
-    content: '';
-    display: inline-block;
-    height: 0.8em;
-    margin-right: ${SPACING.tiny};
-    width: 0.8em;
-  }
+const StyledRecordingIcon = styled.span`
+  animation: ${blink} 1.25s ease infinite both;
+  background-color: #ff3232;
+  border-radius: 50%;
+  content: '';
+  display: inline-block;
+  height: 0.8em;
+  margin-right: ${SPACING.tiny};
+  width: 0.8em;
 `;
 
 const ActionPanel = ({ actions, isRecording }) => {
@@ -80,9 +79,9 @@ const ActionPanel = ({ actions, isRecording }) => {
       <StyledRecordButton
         onClick={record.handler}
         disabled={record.disable}
-        isRecording={isRecording}
         id="action-panel-record-button"
       >
+        {isRecording && <StyledRecordingIcon />}
         {isRecording ? 'Recording' : 'Record'}
       </StyledRecordButton>
       <Button

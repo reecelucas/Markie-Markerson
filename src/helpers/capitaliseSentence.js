@@ -4,8 +4,8 @@ import replaceNonBreakableSpaces from './replaceNonBreakableSpaces';
 const capitalise = ([first, ...rest]) => first.toUpperCase() + rest.join('');
 
 /**
- * Capitalises the first letter of a sentence if it ends in a
- * valid punctuation mark (which can be preceded by a break tag).
+ * Capitalises the first letter of a sentence if it ends in a valid
+ * punctuation mark (which can be preceded by any numberof break tags).
  *
  * Modified from: https://tinyurl.com/y8wlmf9g.
  */

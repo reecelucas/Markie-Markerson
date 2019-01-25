@@ -2,7 +2,7 @@ module.exports = {
   siteMetadata: {
     title: 'Markie Markerson',
     description:
-      'A Web-based DYMO label printing application for simpler marking'
+      'A Web-based DYMO label printing application for simpler marking.'
   },
   plugins: [
     'gatsby-plugin-react-helmet',

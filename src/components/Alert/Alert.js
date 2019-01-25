@@ -30,10 +30,10 @@ const themes = {
 
 const Container = styled.div`
   align-items: flex-start;
-  background-color: ${props => themes[props.appearance].backgroundColor};
-  border: 1px solid ${props => themes[props.appearance].borderColor};
+  background-color: ${({ appearance }) => themes[appearance].backgroundColor};
+  border: 1px solid ${({ appearance }) => themes[appearance].borderColor};
   border-radius: 2px;
-  color: ${props => themes[props.appearance].color};
+  color: ${({ appearance }) => themes[appearance].color};
   display: flex;
   margin-bottom: ${SPACING.base};
   padding: ${SPACING.small};
@@ -46,8 +46,8 @@ const Container = styled.div`
 
   &:before {
     content: '';
-    background: url(${props => themes[props.appearance].icon}) no-repeat center
-      center / 100% 100% transparent;
+    background: url(${({ appearance }) => themes[appearance].icon}) no-repeat
+      center center / 100% 100% transparent;
     display: inline-block;
     flex-shrink: 0;
     height: ${alertIconSize};

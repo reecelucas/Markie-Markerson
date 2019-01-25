@@ -98,9 +98,7 @@ export default class IndexPage extends React.Component {
   };
 
   printLabel = () => {
-    if (!this.label) {
-      return;
-    }
+    if (!this.label) return;
 
     const formattedComment = formatXmlString(this.state.comment);
     const cleanedComment = sanitizeHtml(formattedComment, {
@@ -115,9 +113,7 @@ export default class IndexPage extends React.Component {
   };
 
   initPrinterSetup = () => {
-    if (!window.dymo) {
-      return;
-    }
+    if (!window.dymo) return;
 
     if (process.env.NODE_ENV !== 'production') {
       window.dymo.label.framework.trace = 1; // Enable debug for development
@@ -274,55 +270,47 @@ export default class IndexPage extends React.Component {
   };
 
   render = () => {
-    const {
-      comment,
-      canRecord,
-      recording,
-      printerFound,
-      recordingError
-    } = this.state;
     const actions = {
       clear: {
         handler: this.handleClear,
-        disable: recording || !comment.length
+        disable: this.state.recording || !this.state.comment.length
       },
       print: {
         handler: this.handlePrint,
         disable:
-          recording ||
-          !comment.length ||
-          getCharacterCount(comment) < 0 ||
-          !printerFound
+          this.state.recording ||
+          !this.state.comment.length ||
+          getCharacterCount(this.state.comment) < 0 ||
+          !this.state.printerFound
       },
       record: {
         handler: this.handleRecord,
-        disable: !canRecord
+        disable: !this.state.canRecord
       }
     };
 
     return (
       <Layout>
         <Container>
-          <React.Fragment>
-            {recordingError && (
-              <Alert message={recordingError} appearance="error" />
-            )}
-            {!printerFound && (
-              <Alert
-                message="No DYMO label printers found. Please connect a DYMO printer"
-                appearance="warning"
-              />
-            )}
+          {this.state.recordingError && (
+            <Alert message={this.state.recordingError} appearance="error" />
+          )}
 
-            <TextBox
-              text={comment}
-              characterCount={getCharacterCount(comment)}
-              onChange={this.handleChange}
-              onFocus={this.handleFocus}
+          {!this.state.printerFound && (
+            <Alert
+              message="No DYMO label printers found. Please connect a DYMO printer"
+              appearance="warning"
             />
+          )}
 
-            <ActionPanel actions={actions} isRecording={recording} />
-          </React.Fragment>
+          <TextBox
+            text={this.state.comment}
+            characterCount={getCharacterCount(this.state.comment)}
+            onChange={this.handleChange}
+            onFocus={this.handleFocus}
+          />
+
+          <ActionPanel actions={actions} isRecording={this.state.recording} />
         </Container>
       </Layout>
     );
