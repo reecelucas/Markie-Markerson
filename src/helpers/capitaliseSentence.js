@@ -1,7 +1,6 @@
 import replaceNonBreakableSpaces from './replaceNonBreakableSpaces';
 
-// https://30secondsofcode.org/string#capitalize
-const capitalise = ([first, ...rest]) => first.toUpperCase() + rest.join('');
+const capitalise = text => text.charAt(0).toUpperCase() + text.substr(1);
 
 /**
  * Capitalises the first letter of a sentence if it ends in a valid

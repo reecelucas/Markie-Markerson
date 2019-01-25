@@ -35,9 +35,21 @@ export default class ContentEditable extends React.Component {
     }
   };
 
+  pasteAsPlainText = event => {
+    event.preventDefault();
+
+    // Remove formatting from any pasted text
+    const text = event.clipboardData.getData('text/plain');
+    document.execCommand('insertHTML', false, text);
+  };
+
   render = () => (
     <div
-      // Fixes issue with `dangerouslySetInnerHTML` not firing consistently with `contentEditable`
+      /**
+       * Fixes issue with `dangerouslySetInnerHTML` not firing consistently
+       * with `contentEditable`. Without this clearing the contentEditable
+       * content does not work.
+       */
       key={Math.random()}
       className={this.props.className}
       ref={this.ref}
@@ -46,6 +58,7 @@ export default class ContentEditable extends React.Component {
       onFocus={this.props.onFocus}
       onInput={this.onChange}
       onKeyDown={this.onKeyDown}
+      onPaste={this.pasteAsPlainText}
       dangerouslySetInnerHTML={{ __html: this.props.html }}
     />
   );
