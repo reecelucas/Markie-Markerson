@@ -1,4 +1,4 @@
-export const CHAR_LIMIT = 400;
+export const CHAR_LIMIT = 600;
 export const AUTO_SAVE_INTERVAL = 2500;
 export const LOCAL_STORAGE_KEY = 'MARKIE_SAVER_CACHE';
 export const VOICE_COMMANDS = {
@@ -18,7 +18,7 @@ export const LABEL_XML_TEMPLATE =
     <Id>Address</Id>\
     <PaperName>99014 Shipping</PaperName>\
     <DrawCommands>\
-      <RoundRectangle X="0" Y="0" Width="1600" Height="5000" Rx="0" Ry="0" />\
+      <RoundRectangle X="0" Y="0" Width="5000" Height="4000" Rx="0" Ry="0" />\
     </DrawCommands>\
     <ObjectInfo>\
       <TextObject>\
@@ -28,14 +28,14 @@ export const LABEL_XML_TEMPLATE =
         <LinkedObjectName></LinkedObjectName>\
         <Rotation>Rotation0</Rotation>\
         <IsMirrored>False</IsMirrored>\
-        <IsVariable>False</IsVariable>\
+        <IsVariable>True</IsVariable>\
         <HorizontalAlignment>Left</HorizontalAlignment>\
-        <VerticalAlignment>Top</VerticalAlignment>\
+        <VerticalAlignment>Middle</VerticalAlignment>\
         <TextFitMode>ShrinkToFit</TextFitMode>\
-        <UseFullFontHeight>True</UseFullFontHeight>\
+        <UseFullFontHeight>False</UseFullFontHeight>\
         <Verticalized>False</Verticalized>\
         <StyledText/>\
       </TextObject>\
-      <Bounds X="330" Y="60" Width="5000" Height="2500" />\
+      <Bounds X="300" Y="-500" Width="5000" Height="4000" />\
     </ObjectInfo>\
   </DieCutLabel>';
